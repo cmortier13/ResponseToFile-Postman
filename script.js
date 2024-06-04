@@ -1,13 +1,14 @@
 const express = require('express'),
   app = express(),
-  fs = require('fs'),
+  fs = require('fs-extra'),
   shell = require('shelljs'),
 
    // Modify the folder path in which responses need to be stored
   folderPath = './Responses/',
   defaultFileExtension = 'json', // Change the default file extension
   bodyParser = require('body-parser'),
-  DEFAULT_MODE = 'writeFile',
+  //DEFAULT_MODE = 'writeFile',
+  DEFAULT_MODE = 'outputFile ',
   path = require('path');
 
 // Create the folder path in case it doesn't exist
@@ -25,9 +26,12 @@ app.post('/write', (req, res) => {
     uniqueIdentifier = req.body.uniqueIdentifier ? typeof req.body.uniqueIdentifier === 'boolean' ? Date.now() : req.body.uniqueIdentifier : false,
     filename = `${req.body.requestName}${uniqueIdentifier || ''}`,
     filePath = `${path.join(folderPath, filename)}.${extension}`,
-    options = req.body.options || undefined;
+    options = req.body.options || undefined
 
-  fs[fsMode](filePath, req.body.responseData, options, (err) => {
+  if (fsMode == 'writeFile') {fsMode = DEFAULT_MODE };
+
+  //fs[fsMode](filePath, req.body.responseData, options, (err) => {
+  fs.outputFile(filePath, req.body.responseData, options, (err) => {
     if (err) {
       console.log(err);
       res.send('Error');
